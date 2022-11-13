@@ -1,25 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
+import React, {useState, useEffect } from 'react';
+import Store from './Store.js';
+import getBlockchain from './ethereum.js';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const [paymentProcessor, setPaymentProcessor] = useState(undefined);
+    const [dai, setDai] = useState(undefined);
+
+    useEffect(() => {
+        const init = async () => {
+            const {paymentProcessor, dai } = await getBlockchain();
+            setPaymentProcessor(paymentProcessor);
+            setDai(dai);
+        }
+        init();
+    }, []);
+
+    if(typeof window.ethereum === 'undefined') {
+        return (
+            <div className='container'>
+                <div className='col-sm-12'>
+                    <h1>Blockchain Ecommerce App</h1>
+                    <p>Bạn cần cài đặt phiên bản mới nhất của Metamask</p>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className='container'>
+            <div className='col-sm-12'>
+                <h1>Blockchain Ecommerce App</h1>
+                <Store paymentProcessor={paymentProcessor} dai={dai}></Store>
+            </div>
+        </div>
+    );
 }
 
 export default App;
